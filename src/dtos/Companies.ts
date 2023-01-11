@@ -1,4 +1,5 @@
 export type ICompanyDto =   {
+  key:number,
   id: number,
   companyName: string,
   companyPhone: string,

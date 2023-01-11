@@ -7,6 +7,7 @@ import DashboardLanding from "modules/DashboardLanding/DashboardLanding";
 import Landing from "modules/Landing/Landing";
 import Page404 from "modules/Auth/Page404";
 import { Navigate, Route, Routes } from "react-router-dom";
+import Companies from "modules/Companies";
 
 const App = () => {
   const { token } = useAuth();
@@ -24,7 +25,7 @@ const App = () => {
         <Route path="dashboard" element={<Dashboard />}>
           <Route index element={<DashboardLanding />} />
           <Route path="profile" element={<DashboardLanding />} />
-          <Route path="companies" element={<DashboardLanding />} />
+          <Route path="companies" element={<Companies />} />
           <Route path="products" element={<DashboardLanding />} />
           <Route path="products/:productId" element={<DashboardLanding />} />
         </Route>

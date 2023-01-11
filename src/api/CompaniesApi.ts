@@ -1,3 +1,4 @@
+import { ICompanyDto } from 'dtos/Companies';
 import ICompanyFields, { IMultipleFieldStats } from './../dtos/Fields';
 import { ICompaniesDto } from 'dtos/Companies';
 import allCompanies from 'fakeData/companies.json'
@@ -48,5 +49,5 @@ const getAllFieldStats = async():Promise<IMultipleFieldStats> => {
 export {
     getAllCompanies,
     getLastActionCompanies,
-    getAllFieldStats
+    getAllFieldStats,
 }
