@@ -11,6 +11,7 @@ import {
   HomeOutlined,
   UserOutlined,
   LogoutOutlined,
+  AppstoreOutlined,
 } from "@ant-design/icons";
 import "./dashboard.css";
 import { useAuth } from "hooks";
@@ -36,11 +37,24 @@ const Dashboard = () => {
     navigate("/");
   };
 
+  const goHome = () => {
+    navigate("./");
+  };
+  const goProfile = () => {
+    navigate("profile");
+  };
+  const goCompanies = () => {
+    navigate("companies");
+  };
+  const goProducts = () => {
+    navigate("products");
+  };
+
   return (
     <>
-      <Layout className="h-screen">
+      <Layout className="min-h-screen h-full">
         <Sider
-          className="flex flex-col py-4 shadow-lg"
+          className="flex !fixed h-screen z-20 flex-col py-4 shadow-lg"
           trigger={null}
           theme="light"
           collapsible
@@ -65,20 +79,29 @@ const Dashboard = () => {
                 key: "1",
                 icon: <HomeOutlined />,
                 label: "Home",
+                onClick: goHome,
               },
               {
                 key: "2",
                 icon: <UserOutlined />,
                 label: "Profile",
+                onClick: goProfile,
               },
               {
                 key: "3",
                 icon: <HddOutlined />,
                 label: "Compaines",
+                onClick: goCompanies,
+              },
+              {
+                key: "4",
+                icon: <AppstoreOutlined />,
+                label: "Products",
+                onClick: goProducts,
               },
               {
                 className: "!absolute !bottom-4",
-                key: "4",
+                key: "5",
                 icon: <LogoutOutlined />,
                 label: "Logout",
                 onClick: showModal,
@@ -86,9 +109,13 @@ const Dashboard = () => {
             ]}
           />
         </Sider>
-        <Layout>
+        <Layout
+          className={`transition-all ease-in-out duration-300 ${
+            collapsed ? "ml-[80px]" : "ml-[200px]"
+          }`}
+        >
           <Header
-            className="mx-5 mt-5 rounded-md shadow-lg"
+            className="flex flex-row justify-between px-5 mx-5 mt-5 rounded-md shadow-lg"
             style={{ background: colorBgContainer }}
           >
             {React.createElement(
@@ -98,6 +125,9 @@ const Dashboard = () => {
                 onClick: () => setCollapsed(!collapsed),
               }
             )}
+            <p className="hidden sm:flex font-medium antialiased">
+              Welcome {`${user.firstName} ${user.surName} :)`}
+            </p>
           </Header>
           <Content
             className="m-5 rounded-md p-4 shadow-lg"

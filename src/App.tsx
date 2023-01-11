@@ -23,6 +23,10 @@ const App = () => {
       {token && token.length > 0 && (
         <Route path="dashboard" element={<Dashboard />}>
           <Route index element={<DashboardLanding />} />
+          <Route path="profile" element={<DashboardLanding />} />
+          <Route path="companies" element={<DashboardLanding />} />
+          <Route path="products" element={<DashboardLanding />} />
+          <Route path="products/:productId" element={<DashboardLanding />} />
         </Route>
       )}
     </Routes>
