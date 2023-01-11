@@ -111,7 +111,7 @@ const Dashboard = () => {
       </Layout>
 
       <Modal
-        title="Modal"
+        title="Logout Warning"
         open={open}
         onOk={logout}
         onCancel={hideModal}
@@ -119,7 +119,7 @@ const Dashboard = () => {
         okText="Yes"
         cancelText="No"
       >
-        <p>Bla bla ...</p>
+        <p>Are you sure you want to log out?</p>
       </Modal>
     </>
   );
