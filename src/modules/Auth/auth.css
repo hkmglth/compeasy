@@ -1,0 +1,24 @@
+/* .ant-form-item-row {
+  @apply flex flex-col justify-center items-start w-full;
+}
+.ant-form-item-row {
+  @apply flex justify-center items-start !m-4 !p-0 h-fit;
+}
+.ant-form-item-control {
+  @apply w-full;
+} */
+.sad-roll {
+  animation: rollFromLeft 2s infinite;
+}
+
+@keyframes rollFromLeft {
+  0% {
+    transform: translateX(0px) rotate(0turn);
+  }
+  50% {
+    transform: translateX(-250px) rotate(-1turn);
+  }
+  100% {
+    transform: translateX(0px) rotate(0turn);
+  }
+}

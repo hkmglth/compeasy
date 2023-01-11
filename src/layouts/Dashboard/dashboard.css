@@ -1,0 +1,12 @@
+.logo {
+  @apply transition-all ease-out duration-150 rounded-full shadow-md mx-auto mb-4;
+}
+.logo-expanded {
+  @apply w-12 h-12 bg-sky-500;
+}
+.logo-collapsed {
+  @apply w-24 h-24 bg-sky-500;
+}
+.ant-btn-primary {
+  @apply !bg-sky-500;
+}
