@@ -1,4 +1,8 @@
-import { getAllFieldStats, getLastActionCompanies } from "api/CompaniesApi";
+import {
+  getAllCountryStats,
+  getAllFieldStats,
+  getLastActionCompanies,
+} from "api/CompaniesApi";
 import CompanySimple from "components/Company/CompanySimple";
 import { ICompaniesDto } from "dtos/Companies";
 import { useEffect, useRef, useState } from "react";
@@ -17,7 +21,7 @@ const DashboardLanding = () => {
   );
 
   const [fieldStats, setFieldStats] = useState<IMultipleFieldStats>([]);
-
+  const [countryStats, setCountryStats] = useState<IMultipleFieldStats>([]);
   const getLastActions = async () => {
     const response = await getLastActionCompanies();
     setLastActionCompanies(response);
@@ -28,16 +32,23 @@ const DashboardLanding = () => {
     setFieldStats(response);
   };
 
+  const getCountryStats = async () => {
+    const response = await getAllCountryStats();
+    console.log(response);
+    setCountryStats(response);
+  };
+
   useEffect(() => {
     getLastActions();
     getFieldStats();
+    getCountryStats();
   }, []);
 
   useEffect(() => {
     parentLastActions.current && autoAnimate(parentLastActions.current);
   }, [parentLastActions]);
 
-  const config = {
+  const fieldConfig = {
     appendPadding: 10,
     data: fieldStats,
     angleField: "value",
@@ -58,8 +69,29 @@ const DashboardLanding = () => {
     ],
   };
 
+  const countryConfig = {
+    appendPadding: 10,
+    data: countryStats,
+    angleField: "value",
+    colorField: "type",
+    radius: 0.75,
+    label: {
+      type: "spider",
+      labelHeight: 28,
+      content: "{name}\n{percentage}",
+    },
+    interactions: [
+      {
+        type: "element-selected",
+      },
+      {
+        type: "element-active",
+      },
+    ],
+  };
+
   return (
-    <div className="flex flex-col gap-y-4">
+    <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-y-3">
         <Divider orientation="left">
           <p className="font-bold flex flex-row gap-x-3 text-gray-500 text-lg m-0 p-0">
@@ -67,20 +99,34 @@ const DashboardLanding = () => {
             Recent
           </p>
         </Divider>
-        <div className="flex flex-wrap gap-4 flex-row" ref={parentLastActions}>
+        <div
+          className="flex flex-wrap gap-4 flex-row justify-center items-center"
+          ref={parentLastActions}
+        >
           {lastActionCompanies.map((company) => (
             <CompanySimple key={company.id} company={company} />
           ))}
         </div>
       </div>
-      <div>
-        <Divider orientation="left">
-          <p className="font-bold flex flex-row gap-x-3 text-gray-500 text-lg m-0 p-0">
-            <PieChartOutlined />
-            Field Stats
-          </p>
-        </Divider>
-        <Pie {...config} />
+      <div className="flex flex-row justify-center items-center gap-4">
+        <div className="flex flex-col w-[calc(50%-1rem)] shadow-lg rounded-md bg-gray-100 gap-x-2">
+          <Divider orientation="left">
+            <p className="font-bold flex flex-row gap-x-3 text-gray-500 text-lg m-0 p-0">
+              <PieChartOutlined />
+              Field Stats
+            </p>
+          </Divider>
+          <Pie {...fieldConfig} />
+        </div>
+        <div className="flex flex-col w-[calc(50%-1rem)] shadow-lg rounded-md bg-gray-100 gap-x-2">
+          <Divider orientation="left">
+            <p className="font-bold flex flex-row gap-x-3 text-gray-500 text-lg m-0 p-0">
+              <PieChartOutlined />
+              Country Stats
+            </p>
+          </Divider>
+          <Pie {...countryConfig} />
+        </div>
       </div>
     </div>
   );

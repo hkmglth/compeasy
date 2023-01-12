@@ -5,6 +5,7 @@ import ICompanyFields, {
 } from "./../dtos/Fields";
 import { ICompaniesDto } from "dtos/Companies";
 import allCompanies from "fakeData/companies.json";
+import { countries } from "dtos/Countries";
 
 const getAllCompanies = async (): Promise<ICompaniesDto> => {
   return allCompanies;
@@ -31,6 +32,30 @@ const getAllFieldStats = async (): Promise<IMultipleFieldStats> => {
   return stats;
 };
 
+const getAllCountryStats = async (): Promise<IMultipleFieldStats> => {
+  let stats: IMultipleFieldStats = [];
+  let indexStats: number = 0;
+  allCompanies.map((company) => {
+    countries.map((country, index) => {
+      if (company.country === country.name) {
+        let tempStat: number = -1;
+        stats.find((stat, index) => {
+          if (stat.type === company.country) {
+            tempStat = index;
+          }
+        });
+        if (stats[tempStat] !== undefined) {
+          stats[tempStat].value += 1;
+        } else {
+          stats[indexStats] = { type: company.country, value: 1 };
+          indexStats++;
+        }
+      }
+    });
+  });
+  return stats;
+};
+
 const getCompanyById = async (id: number): Promise<ICompanyDto> => {
   let company: ICompanyDto | undefined = allCompanies.find(
     (item) => item.id === id
@@ -43,4 +68,5 @@ export {
   getLastActionCompanies,
   getAllFieldStats,
   getCompanyById,
+  getAllCountryStats,
 };
