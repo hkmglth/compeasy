@@ -13,7 +13,7 @@ const AllCompaniesColumns: ColumnsType<ICompanyDto> = [
       <Button
         className="flex flex-row items-center justify-center gap-x-3"
         type="ghost"
-        href={`./products/edit/${value}`}
+        href={`companies/edit/${value}`}
       >
         <EditOutlined className="" />
       </Button>
@@ -82,7 +82,6 @@ const AllCompaniesColumns: ColumnsType<ICompanyDto> = [
     filterMultiple: true,
     render: (value: string, record, index) => {
       let country = countries.find((country) => country.name === value);
-      console.log(country);
       return (
         <div className="flex flex-row gap-x-3 items-center justify-start self-center">
           <Avatar
