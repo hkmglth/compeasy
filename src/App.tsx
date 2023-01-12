@@ -9,6 +9,7 @@ import Page404 from "modules/Auth/Page404";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Companies from "modules/Companies/Companies";
 import CompaniesEdit from "modules/Companies/Edit/CompaniesEdit";
+import Products from "modules/Products/Products";
 
 const App = () => {
   const { token } = useAuth();
@@ -19,7 +20,7 @@ const App = () => {
       <Route element={<Auth />}>
         <Route element={<Login />} path="login" />
         <Route element={<Register />} path="register" />
-        {/* <Route element={<Navigate to={"404"} />} path="*" /> */}
+        <Route element={<Navigate to={"404"} />} path="*" />
         <Route element={<Page404 />} path="404" />
       </Route>
       {token && token.length > 0 && (
@@ -31,9 +32,11 @@ const App = () => {
             <Route path="edit/:companyId" element={<CompaniesEdit />} />
           </Route>
           <Route path="products">
-            <Route index element={<DashboardLanding />} />
+            <Route index element={<Products />} />
+            {/* <Route path=":companyId" element={<Products />} /> */}
             <Route path="edit/:productId" element={<DashboardLanding />} />
           </Route>
+          <Route path="products/:companyId" element={<Products />} />
         </Route>
       )}
     </Routes>

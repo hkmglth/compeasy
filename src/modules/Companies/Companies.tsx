@@ -7,7 +7,7 @@ import { AllCompaniesColumns } from "utils/Columns/CompaniesColumns";
 import { PlusOutlined, MinusOutlined, CloseOutlined } from "@ant-design/icons";
 import "./companies.css";
 import { TableRowSelection } from "antd/es/table/interface";
-import { useCompanies, useMessage } from "hooks";
+import { useMessage } from "hooks";
 import { ValidateErrorEntity } from "rc-field-form/lib/interface";
 import { CompanyFieldsAsArray } from "dtos/Fields";
 import { countries } from "dtos/Countries";
@@ -15,19 +15,13 @@ import { DefaultOptionType } from "antd/es/select";
 const Companies = () => {
   const { messageApi } = useMessage();
   const [addCompanyModal, setAddCompanyModal] = useState<boolean>(false);
-  const { companies, setCompanies } = useCompanies();
   const [allCompanies, setAllCompanies] = useState<ICompaniesDto>([]);
   const [selected, setSelected] = useState<ICompaniesDto>([]);
   const [fieldOptions, setFieldOptions] = useState<DefaultOptionType[]>([]);
   const [countryOptions, setCountryOptions] = useState<DefaultOptionType[]>([]);
   const getCompanies = async () => {
-    if (companies.length === 0) {
-      const response = await getAllCompanies();
-      setAllCompanies(response);
-      setCompanies(response);
-    } else {
-      setAllCompanies([...companies]);
-    }
+    const response = await getAllCompanies();
+    setAllCompanies(response);
   };
 
   const rowSelection: TableRowSelection<ICompanyDto> = {
