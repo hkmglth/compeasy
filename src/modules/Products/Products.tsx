@@ -72,7 +72,7 @@ const Products = () => {
     if (selected.length === 0) {
       messageApi.open({
         type: "warning",
-        content: "Please select a company!",
+        content: "Please select a product!",
       });
     }
     let tempProducts: IProductsDto = structuredClone(products);

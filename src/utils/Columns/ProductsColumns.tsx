@@ -2,7 +2,7 @@ import { Avatar, Button, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { RightOutlined, EditOutlined } from "@ant-design/icons";
 import { IProductDto } from "dtos/Products";
-
+import allCompanies from "fakeData/companies.json";
 const AllProductsColumns: ColumnsType<IProductDto> = [
   {
     title: "Edit",
@@ -22,13 +22,17 @@ const AllProductsColumns: ColumnsType<IProductDto> = [
     filterMultiple: true,
   },
   {
-    title: "Company Id",
+    title: "Company",
     dataIndex: "companyId",
     showSorterTooltip: true,
     filtered: true,
     align: "center",
     filterMultiple: true,
     sorter: (a, b) => (a.companyId > b.companyId ? 1 : -1),
+    render: (value: number, record, index) => {
+      let company = allCompanies.find((company) => company.id === value);
+      return <>{company?.companyName}</>;
+    },
   },
   {
     title: "Product Id",
