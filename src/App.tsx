@@ -26,8 +26,11 @@ const App = () => {
           <Route index element={<DashboardLanding />} />
           <Route path="profile" element={<DashboardLanding />} />
           <Route path="companies" element={<Companies />} />
-          <Route path="products" element={<DashboardLanding />} />
-          <Route path="products/:productId" element={<DashboardLanding />} />
+          <Route path="products">
+            <Route index element={<DashboardLanding />} />
+            <Route path=":productId" element={<DashboardLanding />} />
+            <Route path="edit/:productId" element={<DashboardLanding />} />
+          </Route>
         </Route>
       )}
     </Routes>

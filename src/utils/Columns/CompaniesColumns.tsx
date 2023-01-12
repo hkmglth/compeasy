@@ -1,10 +1,27 @@
 import { Avatar, Button } from "antd";
 import type { ColumnsType } from "antd/es/table";
-
-import { RightOutlined } from "@ant-design/icons";
+import { RightOutlined, EditOutlined } from "@ant-design/icons";
 import { ICompanyDto } from "dtos/Companies";
-import { useNavigate } from "react-router-dom";
+import { countries } from "dtos/Countries";
+
 const AllCompaniesColumns: ColumnsType<ICompanyDto> = [
+  {
+    title: "Edit",
+    dataIndex: "id",
+    showSorterTooltip: true,
+    render: (value: string, record, index) => (
+      <Button
+        className="flex flex-row items-center justify-center gap-x-3"
+        type="ghost"
+        href={`./products/edit/${value}`}
+      >
+        <EditOutlined className="" />
+      </Button>
+    ),
+    filtered: true,
+    align: "center",
+    filterMultiple: true,
+  },
   {
     title: "Company Photo",
     dataIndex: "companyPic",
@@ -63,6 +80,19 @@ const AllCompaniesColumns: ColumnsType<ICompanyDto> = [
     filtered: true,
     align: "center",
     filterMultiple: true,
+    render: (value: string, record, index) => {
+      let country = countries.find((country) => country.name === value);
+      console.log(country);
+      return (
+        <div className="flex flex-row gap-x-3 items-center justify-start self-center">
+          <Avatar
+            className="!object-center !object-cover"
+            src={country?.flag}
+          />
+          <p>{country?.name}</p>
+        </div>
+      );
+    },
     sorter: (a, b) => a.country.localeCompare(b.country),
   },
   {

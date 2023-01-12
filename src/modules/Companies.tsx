@@ -1,4 +1,4 @@
-import { Form, Input, Modal, Table } from "antd";
+import { Form, Input, Modal, Select, Table } from "antd";
 import Button from "antd/es/button";
 import { getAllCompanies } from "api/CompaniesApi";
 import { ICompaniesDto, ICompanyDto } from "dtos/Companies";
@@ -9,12 +9,14 @@ import "./companies.css";
 import { TableRowSelection } from "antd/es/table/interface";
 import { useMessage } from "hooks";
 import { ValidateErrorEntity } from "rc-field-form/lib/interface";
+import { DefaultOptionType } from "antd/es/select";
+import { CompanyFieldsAsArray } from "dtos/Fields";
 const Companies = () => {
   const { messageApi } = useMessage();
   const [addCompanyModal, setAddCompanyModal] = useState<boolean>(false);
   const [allCompanies, setAllCompanies] = useState<ICompaniesDto>([]);
   const [selected, setSelected] = useState<ICompaniesDto>([]);
-
+  const [fieldOptions, setFieldOptions] = useState<DefaultOptionType[]>([]);
   const getCompanies = async () => {
     const response = await getAllCompanies();
     setAllCompanies(response);
@@ -73,8 +75,17 @@ const Companies = () => {
     );
   };
 
+  const fillFieldOption = () => {
+    let tempField: DefaultOptionType[] = [];
+    CompanyFieldsAsArray.map((field) =>
+      tempField.push({ value: field, label: field })
+    );
+    setFieldOptions(tempField);
+  };
+
   useEffect(() => {
     getCompanies();
+    fillFieldOption();
   }, []);
 
   return (
@@ -205,7 +216,17 @@ const Companies = () => {
             name="fields"
             rules={[{ required: true, message: "Please enter field!", min: 3 }]}
           >
-            <Input size="large" />
+            <Select
+              showSearch
+              placeholder="Select a field"
+              optionFilterProp="children"
+              filterOption={(input, option: any) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              options={fieldOptions}
+            />
           </Form.Item>
 
           <Form.Item
