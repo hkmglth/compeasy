@@ -9,6 +9,7 @@ import {
   MinusOutlined,
   ShopOutlined,
   CloseOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 import { AllProductsColumns } from "utils/Columns/ProductsColumns";
 import { useMessage } from "hooks";
@@ -22,6 +23,8 @@ const Products = () => {
   const { messageApi } = useMessage();
   const [company, setCompany] = useState<ICompanyDto>({} as ICompanyDto);
   const [products, setProducts] = useState<IProductsDto>([]);
+  const [tempProducts, setTempProducts] = useState<IProductsDto>([]);
+  const [search, setSearch] = useState<string>("");
   const [selected, setSelected] = useState<IProductsDto>([]);
   const [addProductModal, setAddProductModal] = useState<boolean>(false);
   const [companiesOptions, setCompaniesOptions] = useState<DefaultOptionType[]>(
@@ -33,6 +36,7 @@ const Products = () => {
   const getAllProds = async () => {
     const response = await getAllProducts();
     setProducts(response);
+    setTempProducts(response);
   };
 
   const getProdsByCompanyId = async (id: number) => {
@@ -45,6 +49,7 @@ const Products = () => {
       navigate("../../dashboard/products");
     }
     setProducts(response);
+    setTempProducts(response);
   };
 
   const getCompany = async () => {
@@ -72,9 +77,11 @@ const Products = () => {
     }
     let tempProducts: IProductsDto = structuredClone(products);
     let tempSelectedIds = selected.map((select) => select.id);
-    setProducts(
-      tempProducts.filter((company) => !tempSelectedIds.includes(company.id))
+    let deletedProducts = tempProducts.filter(
+      (company) => !tempSelectedIds.includes(company.id)
     );
+    setProducts(deletedProducts);
+    setTempProducts(deletedProducts);
   };
 
   const fillCompaniesOptions = () => {
@@ -96,6 +103,7 @@ const Products = () => {
   const onFinish = (values: IProductDto) => {
     let tempProd: IProductDto = { ...values, id: products.length + 1 };
     setProducts([tempProd, ...products]);
+    setTempProducts([tempProd, ...products]);
     toggleAddProductModal();
   };
 
@@ -105,6 +113,27 @@ const Products = () => {
         messageApi.open({ type: "error", content: error })
       )
     );
+  };
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let tempValue = e.target.value;
+    setSearch(tempValue);
+    let searchedProducts = products.filter((prod) => {
+      let tempCheck: boolean = false;
+      Object.values(prod).map((values) => {
+        if (typeof values === "string") {
+          if (values.includes(tempValue)) {
+            tempCheck = true;
+          }
+        } else {
+          if (values.toString().includes(tempValue)) {
+            tempCheck = true;
+          }
+        }
+      });
+      return tempCheck;
+    });
+    setTempProducts(searchedProducts);
   };
 
   useEffect(() => {
@@ -148,18 +177,31 @@ const Products = () => {
               Delete Products
             </Button>
           </div>
-          <div className="flex flex-row gap-x-3 items-center">
-            <p className="!m-0 !p-0 flex flex-row gap-x-2">
-              <ShopOutlined />
-              Company :
-            </p>
-            <Select
-              placeholder="Select a company"
-              defaultValue={{ value: company.id, label: company.companyName }}
-              className="w-40"
-              onSelect={handleChange}
-              options={companiesOptions}
-            />
+          <div className="flex flex-row gap-x-6 items-center bg-red">
+            <div className="flex flex-row items-center gap-x-3">
+              <p className="!m-0 !p-0 flex flex-row gap-x-2">
+                <ShopOutlined />
+                Company:
+              </p>
+              <Select
+                placeholder="Select a company"
+                defaultValue={{ value: company.id, label: company.companyName }}
+                className="w-40"
+                onSelect={handleChange}
+                options={companiesOptions}
+              />
+            </div>
+            <div className="flex flex-row items-center gap-x-3">
+              <p className="!m-0 !p-0 flex w-fit flex-row gap-x-2">
+                <SearchOutlined />
+                Search:
+              </p>
+              <Input
+                value={search}
+                onChange={handleSearch}
+                placeholder="Search"
+              />
+            </div>
           </div>
         </div>
         <Table
@@ -173,7 +215,7 @@ const Products = () => {
           }}
           rowClassName={"!m-0 !p-0"}
           columns={AllProductsColumns}
-          dataSource={products}
+          dataSource={tempProducts}
         />
       </div>
       <Modal

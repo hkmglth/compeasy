@@ -4,7 +4,12 @@ import { getAllCompanies } from "api/CompaniesApi";
 import { ICompaniesDto, ICompanyDto } from "dtos/Companies";
 import React, { useEffect, useState } from "react";
 import { AllCompaniesColumns } from "utils/Columns/CompaniesColumns";
-import { PlusOutlined, MinusOutlined, CloseOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  MinusOutlined,
+  CloseOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import "./companies.css";
 import { TableRowSelection } from "antd/es/table/interface";
 import { useMessage } from "hooks";
@@ -16,12 +21,15 @@ const Companies = () => {
   const { messageApi } = useMessage();
   const [addCompanyModal, setAddCompanyModal] = useState<boolean>(false);
   const [allCompanies, setAllCompanies] = useState<ICompaniesDto>([]);
+  const [tempAllCompanies, setTempAllCompanies] = useState<ICompaniesDto>([]);
   const [selected, setSelected] = useState<ICompaniesDto>([]);
   const [fieldOptions, setFieldOptions] = useState<DefaultOptionType[]>([]);
   const [countryOptions, setCountryOptions] = useState<DefaultOptionType[]>([]);
+  const [search, setSearch] = useState<string>("");
   const getCompanies = async () => {
     const response = await getAllCompanies();
     setAllCompanies(response);
+    setTempAllCompanies(response);
   };
 
   const rowSelection: TableRowSelection<ICompanyDto> = {
@@ -40,9 +48,11 @@ const Companies = () => {
     }
     let tempCompanies: ICompaniesDto = structuredClone(allCompanies);
     let tempSelectedIds = selected.map((select) => select.id);
-    setAllCompanies(
-      tempCompanies.filter((company) => !tempSelectedIds.includes(company.id))
+    let tempDeletedCompanies = tempCompanies.filter(
+      (company) => !tempSelectedIds.includes(company.id)
     );
+    setAllCompanies(tempDeletedCompanies);
+    setTempAllCompanies(tempDeletedCompanies);
   };
 
   const toggleAddCompanyModal = () => {
@@ -62,6 +72,7 @@ const Companies = () => {
       key: allCompanies.length + 1,
     };
     setAllCompanies([tempCompany, ...allCompanies]);
+    setTempAllCompanies([tempCompany, ...allCompanies]);
     messageApi.open({
       type: "success",
       content: "Company added successfully!",
@@ -98,6 +109,27 @@ const Companies = () => {
     fillCountryOption();
   };
 
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let tempValue = e.target.value;
+    setSearch(tempValue);
+    let searchedCompanies = allCompanies.filter((company) => {
+      let tempCheck: boolean = false;
+      Object.values(company).map((values) => {
+        if (typeof values === "string") {
+          if (values.includes(tempValue)) {
+            tempCheck = true;
+          }
+        } else {
+          if (values.toString().includes(tempValue)) {
+            tempCheck = true;
+          }
+        }
+      });
+      return tempCheck;
+    });
+    setTempAllCompanies(searchedCompanies);
+  };
+
   useEffect(() => {
     getCompanies();
     fillOptions();
@@ -106,23 +138,37 @@ const Companies = () => {
   return (
     <>
       <div className="flex flex-col gap-y-3">
-        <div className="flex flex-row gap-x-3">
-          <Button
-            onClick={toggleAddCompanyModal}
-            className="flex flex-row items-center justify-between"
-          >
-            <PlusOutlined />
-            Add Company
-          </Button>
+        <div className="flex flex-row gap-x-6 justify-between">
+          <div className="flex flex-row gap-x-3">
+            <Button
+              onClick={toggleAddCompanyModal}
+              className="flex flex-row items-center justify-between"
+            >
+              <PlusOutlined />
+              Add Company
+            </Button>
 
-          <Button
-            onClick={deleteSelections}
-            className="flex flex-row items-center justify-between"
-            danger
-          >
-            <MinusOutlined />
-            Delete Companies
-          </Button>
+            <Button
+              onClick={deleteSelections}
+              className="flex flex-row items-center justify-between"
+              danger
+            >
+              <MinusOutlined />
+              Delete Companies
+            </Button>
+          </div>
+
+          <div className="flex flex-row items-center gap-x-3">
+            <p className="!m-0 !p-0 flex w-fit flex-row gap-x-2">
+              <SearchOutlined />
+              Search:
+            </p>
+            <Input
+              value={search}
+              onChange={handleSearch}
+              placeholder="Search"
+            />
+          </div>
         </div>
         <Table
           rowSelection={{
@@ -135,7 +181,7 @@ const Companies = () => {
           }}
           rowClassName={"!m-0 !p-0"}
           columns={AllCompaniesColumns}
-          dataSource={allCompanies}
+          dataSource={tempAllCompanies}
         />
       </div>
 
