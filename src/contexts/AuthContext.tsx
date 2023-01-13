@@ -15,6 +15,7 @@ export const AuthContextDefault: IAuthContextProps = {
     surName: "Hekimoglu",
     firstName: "Taha",
     email: "tahahkmgl@gmail.com",
+    userPic: "https://robohash.org/dolorutquisquam.png?size=120x120&set=set1",
     password: "admin",
     token: "",
     role: "Admin",

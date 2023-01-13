@@ -11,6 +11,7 @@ import Companies from "modules/Companies/Companies";
 import CompaniesEdit from "modules/Companies/Edit/CompaniesEdit";
 import Products from "modules/Products/Products";
 import ProductsEdit from "modules/Products/Edit/ProductsEdit";
+import Profile from "modules/Profile";
 
 const App = () => {
   const { token } = useAuth();
@@ -27,7 +28,7 @@ const App = () => {
       {token && token.length > 0 && (
         <Route path="dashboard" element={<Dashboard />}>
           <Route index element={<DashboardLanding />} />
-          <Route path="profile" element={<DashboardLanding />} />
+          <Route path="profile" element={<Profile />} />
           <Route path="companies">
             <Route index element={<Companies />} />
             <Route path="edit/:companyId" element={<CompaniesEdit />} />
