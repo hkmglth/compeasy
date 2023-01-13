@@ -34,9 +34,13 @@ const Products = () => {
   const navigate = useNavigate();
 
   const getAllProds = async () => {
-    const response = await getAllProducts();
-    setProducts(response);
-    setTempProducts(response);
+    if (products.length > 0) {
+      setTempProducts(structuredClone(products));
+    } else {
+      const response = await getAllProducts();
+      setProducts(response);
+      setTempProducts(response);
+    }
   };
 
   const getProdsByCompanyId = async (id: number) => {
