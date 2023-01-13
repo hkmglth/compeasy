@@ -14,9 +14,9 @@
   @apply m-5 w-full overflow-auto rounded-md p-4 shadow-lg transition-all duration-75 ease-in-out;
 }
 .outlet-container-collapsed {
-  @apply min-w-[calc(100vw-200px-2.5rem)] max-w-[calc(100vw-200px-2.5rem)];
+  @apply min-w-[calc(100vw-220px-2.5rem)] max-w-[calc(100vw-220px-2.5rem)];
 }
 
 .outlet-container-active {
-  @apply min-w-[calc(100vw-85px-2.5rem)] max-w-[calc(100vw-85px-2.5rem)];
+  @apply min-w-[calc(100vw-100px-2.5rem)] max-w-[calc(100vw-100px-2.5rem)];
 }

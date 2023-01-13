@@ -173,7 +173,7 @@ const Dashboard = () => {
               <p className="hidden sm:flex font-medium antialiased">
                 Welcome {`${user.firstName} ${user.surName} :)`}
               </p>
-              <div className="hidden md:flex flex-row gap-x-6 justify-center items-center">
+              <div className="hidden lg:flex flex-row gap-x-6 justify-center items-center">
                 <p className="m-0 p-0">
                   Welcome to <b>etecube</b> with
                   <b> {counts.companiesCount} </b>
