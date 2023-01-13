@@ -137,7 +137,7 @@ const Companies = () => {
 
   return (
     <>
-      <div className="flex flex-col gap-y-3">
+      <div className="flex flex-col gap-y-3 w-full overflow-auto">
         <div className="flex flex-row gap-x-6 justify-between">
           <div className="flex flex-row gap-x-3">
             <Button

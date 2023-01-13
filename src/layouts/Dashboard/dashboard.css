@@ -10,3 +10,13 @@
 .ant-btn-primary {
   @apply !bg-sky-500;
 }
+.outlet-container {
+  @apply m-5 w-full rounded-md p-4 shadow-lg transition-all duration-75 ease-in-out;
+}
+.outlet-container-collapsed {
+  @apply min-w-[calc(100vw-200px-2.5rem)] max-w-[calc(100vw-200px-2.5rem)];
+}
+
+.outlet-container-active {
+  @apply min-w-[calc(100vw-80px-2.5rem)] max-w-[calc(100vw-80px-2.5rem)] overflow-auto;
+}

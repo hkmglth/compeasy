@@ -130,7 +130,11 @@ const Dashboard = () => {
             </p>
           </Header>
           <Content
-            className="m-5 rounded-md p-4 shadow-lg"
+            className={`outlet-container ${
+              collapsed
+                ? "outlet-container-active"
+                : "outlet-container-collapsed"
+            }`}
             style={{
               background: colorBgContainer,
             }}
