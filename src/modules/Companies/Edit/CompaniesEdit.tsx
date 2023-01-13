@@ -14,7 +14,6 @@ const CompaniesEdit = () => {
   const { messageApi } = useMessage();
   const { companies, setCompanies } = useCompanies();
   const [company, setCompany] = useState<ICompanyDto>({} as ICompanyDto);
-  const [addCompanyModal, setAddCompanyModal] = useState<boolean>(false);
   const [fieldOptions, setFieldOptions] = useState<DefaultOptionType[]>([]);
   const [countryOptions, setCountryOptions] = useState<DefaultOptionType[]>([]);
 

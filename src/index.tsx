@@ -7,6 +7,8 @@ import { BrowserRouter } from "react-router-dom";
 import "antd/dist/reset.css";
 import MessageProvider from "contexts/MessageContext";
 import AuthProvider from "contexts/AuthContext";
+import CompaniesProvider from "contexts/CompaniesContext";
+import ProductsProvider from "contexts/ProductsContext";
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
@@ -24,7 +26,11 @@ root.render(
       >
         <AuthProvider>
           <MessageProvider>
-            <App />
+            <CompaniesProvider>
+              <ProductsProvider>
+                <App />
+              </ProductsProvider>
+            </CompaniesProvider>
           </MessageProvider>
         </AuthProvider>
       </ConfigProvider>

@@ -12,7 +12,7 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import { AllProductsColumns } from "utils/Columns/ProductsColumns";
-import { useMessage } from "hooks";
+import { useMessage, useProducts } from "hooks";
 import { DefaultOptionType } from "antd/es/select";
 import allCompanies from "fakeData/companies.json";
 import { ICompanyDto } from "dtos/Companies";
@@ -22,7 +22,7 @@ const Products = () => {
   const { companyId } = useParams();
   const { messageApi } = useMessage();
   const [company, setCompany] = useState<ICompanyDto>({} as ICompanyDto);
-  const [products, setProducts] = useState<IProductsDto>([]);
+  const { products, setProducts } = useProducts();
   const [tempProducts, setTempProducts] = useState<IProductsDto>([]);
   const [search, setSearch] = useState<string>("");
   const [selected, setSelected] = useState<IProductsDto>([]);

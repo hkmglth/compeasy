@@ -12,7 +12,7 @@ import {
 } from "@ant-design/icons";
 import "./companies.css";
 import { TableRowSelection } from "antd/es/table/interface";
-import { useMessage } from "hooks";
+import { useCompanies, useMessage } from "hooks";
 import { ValidateErrorEntity } from "rc-field-form/lib/interface";
 import { CompanyFieldsAsArray } from "dtos/Fields";
 import { countries } from "dtos/Countries";
@@ -20,16 +20,21 @@ import { DefaultOptionType } from "antd/es/select";
 const Companies = () => {
   const { messageApi } = useMessage();
   const [addCompanyModal, setAddCompanyModal] = useState<boolean>(false);
-  const [allCompanies, setAllCompanies] = useState<ICompaniesDto>([]);
+  const { companies, setCompanies } = useCompanies();
   const [tempAllCompanies, setTempAllCompanies] = useState<ICompaniesDto>([]);
   const [selected, setSelected] = useState<ICompaniesDto>([]);
   const [fieldOptions, setFieldOptions] = useState<DefaultOptionType[]>([]);
   const [countryOptions, setCountryOptions] = useState<DefaultOptionType[]>([]);
   const [search, setSearch] = useState<string>("");
+
   const getCompanies = async () => {
-    const response = await getAllCompanies();
-    setAllCompanies(response);
-    setTempAllCompanies(response);
+    if (companies.length > 0) {
+      setTempAllCompanies(structuredClone(companies));
+    } else {
+      const response = await getAllCompanies();
+      setCompanies(response);
+      setTempAllCompanies(response);
+    }
   };
 
   const rowSelection: TableRowSelection<ICompanyDto> = {
@@ -46,12 +51,12 @@ const Companies = () => {
         content: "Please select a company!",
       });
     }
-    let tempCompanies: ICompaniesDto = structuredClone(allCompanies);
+    let tempCompanies: ICompaniesDto = structuredClone(companies);
     let tempSelectedIds = selected.map((select) => select.id);
     let tempDeletedCompanies = tempCompanies.filter(
       (company) => !tempSelectedIds.includes(company.id)
     );
-    setAllCompanies(tempDeletedCompanies);
+    setCompanies(tempDeletedCompanies);
     setTempAllCompanies(tempDeletedCompanies);
   };
 
@@ -68,11 +73,11 @@ const Companies = () => {
       fields: values.fields,
       vatNumber: values.vatNumber,
       website: values.website,
-      id: allCompanies.length + 1,
-      key: allCompanies.length + 1,
+      id: companies.length + 1,
+      key: companies.length + 1,
     };
-    setAllCompanies([tempCompany, ...allCompanies]);
-    setTempAllCompanies([tempCompany, ...allCompanies]);
+    setCompanies([tempCompany, ...companies]);
+    setTempAllCompanies([tempCompany, ...companies]);
     messageApi.open({
       type: "success",
       content: "Company added successfully!",
@@ -112,7 +117,7 @@ const Companies = () => {
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     let tempValue = e.target.value;
     setSearch(tempValue);
-    let searchedCompanies = allCompanies.filter((company) => {
+    let searchedCompanies = companies.filter((company) => {
       let tempCheck: boolean = false;
       Object.values(company).map((values) => {
         if (typeof values === "string") {

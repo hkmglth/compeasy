@@ -13,7 +13,11 @@ const Login = () => {
   const { messageApi } = useMessage();
   const onFinish = (values: ILoginDto) => {
     if (user.email === values.email && user.password === values.password) {
-      localStorage.setItem(STORAGEKEYS.__TOKEN, "token");
+      if (values.remember) {
+        localStorage.setItem(STORAGEKEYS.__TOKEN, "token");
+      } else {
+        sessionStorage.setItem(STORAGEKEYS.__TOKEN, "token");
+      }
       navigate("/");
     } else {
       alert("hata");

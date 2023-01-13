@@ -38,6 +38,7 @@ const Dashboard = () => {
 
   const logout = () => {
     localStorage.removeItem(STORAGEKEYS.__TOKEN);
+    sessionStorage.removeItem(STORAGEKEYS.__TOKEN);
     navigate("/");
   };
   const goHome = () => {

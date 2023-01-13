@@ -6,8 +6,7 @@ import STORAGEKEYS from "utils/StorageKeys";
 export type IAuthContextProps = {
   user: IUserDto;
   setUser: (user: IUserDto) => any;
-  token: string;
-  setToken: (token: string) => any;
+  token: string | undefined | null;
 };
 
 export const AuthContextDefault: IAuthContextProps = {
@@ -22,7 +21,6 @@ export const AuthContextDefault: IAuthContextProps = {
   },
   setUser: () => {},
   token: "",
-  setToken: () => {},
 };
 
 export const AuthContext = createContext<IAuthContextProps>(AuthContextDefault);
@@ -30,10 +28,9 @@ export const AuthContext = createContext<IAuthContextProps>(AuthContextDefault);
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<IUserDto>(AuthContextDefault.user);
 
-  const token = localStorage.getItem(STORAGEKEYS.__TOKEN)!;
-  const setToken = (newToken: string) => {
-    localStorage.setItem(STORAGEKEYS.__TOKEN, newToken);
-  };
+  const token = localStorage.getItem(STORAGEKEYS.__TOKEN)
+    ? localStorage.getItem(STORAGEKEYS.__TOKEN)
+    : sessionStorage.getItem(STORAGEKEYS.__TOKEN);
 
   const navigate = useNavigate();
   const checkAuth = () => {
@@ -46,7 +43,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser, token, setToken }}>
+    <AuthContext.Provider value={{ user, setUser, token }}>
       {children}
     </AuthContext.Provider>
   );
