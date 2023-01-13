@@ -1,9 +1,9 @@
 import { Layout, Menu, Modal, theme } from "antd";
 import { Header, Content } from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -16,6 +16,7 @@ import {
 import "./dashboard.css";
 import { useAuth } from "hooks";
 import STORAGEKEYS from "utils/StorageKeys";
+import { ItemType } from "antd/es/menu/hooks/useItems";
 const Dashboard = () => {
   const { user } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
@@ -23,6 +24,9 @@ const Dashboard = () => {
     token: { colorBgContainer },
   } = theme.useToken();
   const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState<string[]>();
+
+  const location = useLocation();
   const navigate = useNavigate();
   const showModal = () => {
     setOpen(true);
@@ -36,7 +40,6 @@ const Dashboard = () => {
     localStorage.removeItem(STORAGEKEYS.__TOKEN);
     navigate("/");
   };
-
   const goHome = () => {
     navigate("./");
   };
@@ -49,6 +52,58 @@ const Dashboard = () => {
   const goProducts = () => {
     navigate("products");
   };
+
+  const [menus, setMenus] = useState<ItemType[]>([
+    {
+      key: "1",
+      icon: <HomeOutlined />,
+      label: "Home",
+      onClick: goHome,
+    },
+    {
+      key: "2",
+      icon: <UserOutlined />,
+      label: "Profile",
+      onClick: goProfile,
+    },
+    {
+      key: "3",
+      icon: <HddOutlined />,
+      label: "Companies",
+      onClick: goCompanies,
+    },
+    {
+      key: "4",
+      icon: <AppstoreOutlined />,
+      label: "Products",
+      onClick: goProducts,
+    },
+    {
+      className: "!absolute !bottom-4",
+      key: "5",
+      icon: <LogoutOutlined />,
+      label: "Logout",
+      onClick: showModal,
+    },
+  ]);
+
+  const handleSelected = () => {
+    let selectedKey: string[] = [];
+    let paths = location.pathname.split("/");
+    menus.map((menu: any) => {
+      paths.map((path) => {
+        if (path === menu.label.toLowerCase()) {
+          selectedKey.push(menu.key);
+        }
+      });
+    });
+
+    setSelected(selectedKey.length === 0 ? ["1"] : selectedKey);
+  };
+
+  useEffect(() => {
+    handleSelected();
+  }, [location]);
 
   return (
     <>
@@ -73,40 +128,8 @@ const Dashboard = () => {
           <Menu
             theme="light"
             mode="vertical"
-            defaultSelectedKeys={["1"]}
-            items={[
-              {
-                key: "1",
-                icon: <HomeOutlined />,
-                label: "Home",
-                onClick: goHome,
-              },
-              {
-                key: "2",
-                icon: <UserOutlined />,
-                label: "Profile",
-                onClick: goProfile,
-              },
-              {
-                key: "3",
-                icon: <HddOutlined />,
-                label: "Compaines",
-                onClick: goCompanies,
-              },
-              {
-                key: "4",
-                icon: <AppstoreOutlined />,
-                label: "Products",
-                onClick: goProducts,
-              },
-              {
-                className: "!absolute !bottom-4",
-                key: "5",
-                icon: <LogoutOutlined />,
-                label: "Logout",
-                onClick: showModal,
-              },
-            ]}
+            selectedKeys={selected}
+            items={menus}
           />
         </Sider>
         <Layout

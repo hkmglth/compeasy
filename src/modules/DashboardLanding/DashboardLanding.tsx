@@ -34,7 +34,6 @@ const DashboardLanding = () => {
 
   const getCountryStats = async () => {
     const response = await getAllCountryStats();
-    console.log(response);
     setCountryStats(response);
   };
 
