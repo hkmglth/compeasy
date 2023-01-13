@@ -47,7 +47,7 @@ const Profile = () => {
   }, [parentLastActions]);
 
   return (
-    <div className="flex flex-col items-center h-full">
+    <div className="flex flex-col relative items-center h-full">
       <Divider orientation="left">
         <p className="flex flex-row gap-x-3 items-center m-0 p-0">
           <Avatar
@@ -59,25 +59,24 @@ const Profile = () => {
           <EditOutlined />
         </p>
       </Divider>
+      <Button
+        type="primary"
+        shape="circle"
+        size="large"
+        onClick={toggleIsEdit}
+        className="flex flex-row absolute top-7 right-6 items-center justify-center shadow-lg"
+      >
+        <EditOutlined className="text-xl mb-2 mr-[2px]" />
+      </Button>
       <div
         className="relative flex flex-col w-full flex-wrap gap-4 items-center justify-center"
         ref={parentLastActions}
       >
-        <Button
-          type="primary"
-          shape="circle"
-          size="large"
-          onClick={toggleIsEdit}
-          className="flex flex-row absolute right-0 top-0 items-center justify-center shadow-lg"
-        >
-          <EditOutlined className="text-xl mb-2 mr-[2px]" />
-        </Button>
-
         {isEdit ? (
           <>
             <Form
               name="updateCompany"
-              className="flex flex-col md:w-1/2 xl:w-1/4 max-w-5xl"
+              className="flex flex-col bg-gray-200 p-4 rounded-md shadow-lg md:w-1/2 xl:w-1/4 max-w-5xl"
               onFinish={onFinish}
               onFinishFailed={onFinishFailed}
               autoComplete="off"
@@ -153,7 +152,7 @@ const Profile = () => {
                     Cancel
                   </Button>
                   <Button
-                    type="default"
+                    type="primary"
                     htmlType="submit"
                     className="flex flex-row items-center justify-between"
                   >
