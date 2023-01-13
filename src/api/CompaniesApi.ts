@@ -63,10 +63,17 @@ const getCompanyById = async (id: number): Promise<ICompanyDto> => {
   return company ? company : ({} as ICompanyDto);
 };
 
+const getCompaniesCount = async (): Promise<number> => {
+  let company = allCompanies.length;
+
+  return company;
+};
+
 export {
   getAllCompanies,
   getLastActionCompanies,
   getAllFieldStats,
   getCompanyById,
   getAllCountryStats,
+  getCompaniesCount,
 };

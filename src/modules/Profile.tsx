@@ -13,12 +13,15 @@ import {
   MailOutlined,
   DatabaseOutlined,
 } from "@ant-design/icons";
+import { getProductsCount } from "api/ProductsApi";
+
 const Profile = () => {
   const parentLastActions = useRef<HTMLDivElement>(null);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const navigate = useNavigate();
   const { user, setUser } = useAuth();
   const { messageApi } = useMessage();
+
   const toggleIsEdit = () => {
     setIsEdit(!isEdit);
   };
@@ -43,6 +46,7 @@ const Profile = () => {
   };
 
   useEffect(() => {
+    console.log("test");
     parentLastActions.current && autoAnimate(parentLastActions.current);
   }, [parentLastActions]);
 

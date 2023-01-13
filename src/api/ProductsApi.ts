@@ -15,4 +15,14 @@ const getAllProducts = async (): Promise<IProductsDto> => {
   return allProducts;
 };
 
-export { getProductsByCompanyId, getAllProducts, getProductById };
+const getProductsCount = async (): Promise<number> => {
+  let tempProducts = allProducts.length;
+  return tempProducts;
+};
+
+export {
+  getProductsByCompanyId,
+  getAllProducts,
+  getProductById,
+  getProductsCount,
+};

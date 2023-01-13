@@ -1,6 +1,7 @@
 import {
   getAllCountryStats,
   getAllFieldStats,
+  getCompaniesCount,
   getLastActionCompanies,
 } from "api/CompaniesApi";
 import CompanySimple from "components/Company/CompanySimple";
@@ -10,8 +11,8 @@ import autoAnimate from "@formkit/auto-animate";
 import { Divider } from "antd";
 import { Pie } from "@ant-design/plots";
 import { IMultipleFieldStats } from "dtos/Fields";
-
 import { ClockCircleOutlined, PieChartOutlined } from "@ant-design/icons";
+import { getProductsCount } from "api/ProductsApi";
 
 const DashboardLanding = () => {
   const parentLastActions = useRef<HTMLDivElement>(null);
@@ -92,7 +93,7 @@ const DashboardLanding = () => {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-y-3">
-        <Divider orientation="left">
+        <Divider className="relative" orientation="left">
           <p className="font-bold flex flex-row gap-x-3 text-gray-500 text-lg m-0 p-0">
             <ClockCircleOutlined />
             Recent
