@@ -10,6 +10,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import Companies from "modules/Companies/Companies";
 import CompaniesEdit from "modules/Companies/Edit/CompaniesEdit";
 import Products from "modules/Products/Products";
+import ProductsEdit from "modules/Products/Edit/ProductsEdit";
 
 const App = () => {
   const { token } = useAuth();
@@ -34,7 +35,7 @@ const App = () => {
           <Route path="products">
             <Route index element={<Products />} />
             {/* <Route path=":companyId" element={<Products />} /> */}
-            <Route path="edit/:productId" element={<DashboardLanding />} />
+            <Route path="edit/:productId" element={<ProductsEdit />} />
           </Route>
           <Route path="products/:companyId" element={<Products />} />
         </Route>
