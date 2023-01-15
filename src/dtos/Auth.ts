@@ -1,14 +1,17 @@
 type IDefaultUserDto = {
-    email:string,
-    password:string
-}
+  email: string;
+  password: string;
+};
 
 export type ILoginDto = IDefaultUserDto & {
-    remember:boolean
-}
+  remember: boolean;
+};
 
 export type IRegisterDto = IDefaultUserDto & {
-    name:string,
-    surName:string,
-    email:string,
-}
+  firstName: string;
+  surName: string;
+};
+
+export type ITokenDto = {
+  token: string;
+};

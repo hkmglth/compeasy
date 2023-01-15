@@ -1,27 +1,37 @@
-import { Divider, message } from "antd";
+import { Divider } from "antd";
 import { Button, Checkbox, Form, Input } from "antd";
 import "../Auth/auth.css";
 import { AiOutlineRight } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
-import { useAuth, useMessage } from "hooks";
+import { useMessage } from "hooks";
 import { ILoginDto } from "dtos/Auth";
-import STORAGEKEYS from "utils/StorageKeys";
 import { ValidateErrorEntity } from "rc-field-form/lib/interface";
+import { login } from "api/AuthApi";
+import STORAGEKEYS from "utils/StorageKeys";
+import { useEffect, useState } from "react";
+import getToken from "utils/getToken";
 const Login = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
-  const { user } = useAuth();
   const { messageApi } = useMessage();
-  const onFinish = (values: ILoginDto) => {
-    if (user.email === values.email && user.password === values.password) {
+
+  const onFinish = async (values: ILoginDto) => {
+    setIsLoading(true);
+    const response = await login(values);
+    if (response.success) {
       if (values.remember) {
-        localStorage.setItem(STORAGEKEYS.__TOKEN, "token");
+        localStorage.setItem(STORAGEKEYS.__TOKEN, response.data.token);
       } else {
-        sessionStorage.setItem(STORAGEKEYS.__TOKEN, "token");
+        sessionStorage.setItem(STORAGEKEYS.__TOKEN, response.data.token);
       }
-      navigate("/");
+      navigate("/dashboard");
     } else {
-      alert("hata");
+      messageApi.open({
+        type: "error",
+        content: response.message,
+      });
     }
+    setIsLoading(false);
   };
 
   const onFinishFailed = (values: ValidateErrorEntity<ILoginDto>) => {
@@ -35,6 +45,17 @@ const Login = () => {
   const goRegister = () => {
     navigate("../register");
   };
+
+  useEffect(() => {
+    const token = getToken().headers.Authorization;
+    if (token && token.length !== 0) {
+      messageApi.open({
+        type: "success",
+        content: "You are already login!",
+      });
+      navigate("/dashboard");
+    }
+  }, []);
 
   return (
     <div className="flex flex-col bg-gray-100 justify-center items-center px-2 py-8 sm:px-8 transition-all ease-in-out duration-300 rounded-md shadow-lg ">
@@ -83,6 +104,7 @@ const Login = () => {
           wrapperCol={{ span: 24 }}
         >
           <Button
+            loading={isLoading}
             icon={<AiOutlineRight className="mt-[2px]" />}
             className="w-full flex flex-row-reverse justify-center items-center gap-x-2"
             size="large"

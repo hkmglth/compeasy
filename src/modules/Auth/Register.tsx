@@ -6,11 +6,26 @@ import { useNavigate } from "react-router-dom";
 import { IRegisterDto } from "dtos/Auth";
 import { useMessage } from "hooks";
 import { ValidateErrorEntity } from "rc-field-form/lib/interface";
+import { useEffect } from "react";
+import getToken from "utils/getToken";
+import { register } from "api/AuthApi";
 const Register = () => {
   const navigate = useNavigate();
   const { messageApi } = useMessage();
-  const onFinish = (values: IRegisterDto) => {
-    navigate("../login");
+  const onFinish = async (values: IRegisterDto) => {
+    const response = await register(values);
+    if (response.success) {
+      messageApi.open({
+        type: "success",
+        content: response.message,
+      });
+      navigate("../login");
+    } else {
+      messageApi.open({
+        type: "error",
+        content: response.message,
+      });
+    }
   };
 
   const onFinishFailed = (values: ValidateErrorEntity<IRegisterDto>) => {
@@ -24,6 +39,17 @@ const Register = () => {
   const goRegister = () => {
     navigate("../login");
   };
+
+  useEffect(() => {
+    const token = getToken().headers.Authorization;
+    if (token && token.length !== 0) {
+      messageApi.open({
+        type: "warning",
+        content: "Please logout before register!",
+      });
+      navigate(-1);
+    }
+  }, []);
 
   return (
     <div className="flex flex-col bg-gray-100 justify-center items-center px-2 py-8 sm:px-8 transition-all ease-in-out duration-300 rounded-md shadow-lg">
@@ -41,8 +67,8 @@ const Register = () => {
         <Form.Item
           labelCol={{ span: 24, className: "!-mb-2" }}
           wrapperCol={{ span: 24 }}
-          label="Name"
-          name="name"
+          label="First Name"
+          name="firstName"
           rules={[{ required: true, message: "Please enter your name!" }]}
         >
           <Input size="large" />
@@ -52,7 +78,7 @@ const Register = () => {
           labelCol={{ span: 24, className: "!-mb-2" }}
           wrapperCol={{ span: 24 }}
           label="Surname"
-          name="surname"
+          name="surName"
           rules={[{ required: true, message: "Please enter your surname!" }]}
         >
           <Input size="large" />

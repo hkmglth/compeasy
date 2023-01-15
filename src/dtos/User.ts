@@ -1,9 +1,7 @@
-export type IUserDto = {
+export type IUserInfoDto = {
   firstName: string;
   surName: string;
   email: string;
-  password: string; // for without backend
-  userPic: string;
-  token: string;
+  userPic?: string;
   role: string;
 };

@@ -12,7 +12,6 @@ import { Divider } from "antd";
 import { Pie } from "@ant-design/plots";
 import { IMultipleFieldStats } from "dtos/Fields";
 import { ClockCircleOutlined, PieChartOutlined } from "@ant-design/icons";
-import { getProductsCount } from "api/ProductsApi";
 
 const DashboardLanding = () => {
   const parentLastActions = useRef<HTMLDivElement>(null);

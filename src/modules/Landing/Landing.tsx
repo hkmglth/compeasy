@@ -1,10 +1,14 @@
 import { useAuth } from "hooks";
-import React from "react";
+import { useEffect } from "react";
 import { Navigate } from "react-router-dom";
-import STORAGEKEYS from "utils/StorageKeys";
+import getToken from "utils/getToken";
 import "./landing.css";
 const Landing = () => {
-  const { token } = useAuth();
+  let token: string = "";
+  useEffect(() => {
+    token = getToken().headers.Authorization;
+  }, []);
+
   return (
     <>
       {token && token.length !== 0 ? (

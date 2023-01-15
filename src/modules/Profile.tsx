@@ -2,7 +2,7 @@ import autoAnimate from "@formkit/auto-animate";
 import { Avatar, Button, Divider, Select, Form, Input } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import { useAuth, useMessage } from "hooks";
-import { IUserDto } from "dtos/User";
+import { IUserInfoDto } from "dtos/User";
 import { useNavigate } from "react-router-dom";
 import { ValidateErrorEntity } from "rc-field-form/lib/interface";
 import {
@@ -13,7 +13,6 @@ import {
   MailOutlined,
   DatabaseOutlined,
 } from "@ant-design/icons";
-import { getProductsCount } from "api/ProductsApi";
 
 const Profile = () => {
   const parentLastActions = useRef<HTMLDivElement>(null);
@@ -26,8 +25,8 @@ const Profile = () => {
     setIsEdit(!isEdit);
   };
 
-  const onFinish = (values: IUserDto) => {
-    let tempUser: IUserDto = { ...values };
+  const onFinish = (values: IUserInfoDto) => {
+    let tempUser: IUserInfoDto = { ...values };
 
     setUser(tempUser);
     messageApi.open({
@@ -37,7 +36,7 @@ const Profile = () => {
     navigate("../");
   };
 
-  const onFinishFailed = (values: ValidateErrorEntity<IUserDto>) => {
+  const onFinishFailed = (values: ValidateErrorEntity<IUserInfoDto>) => {
     values.errorFields.map((errors) =>
       errors.errors.map((error) =>
         messageApi.open({ type: "error", content: error })
@@ -46,7 +45,6 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    console.log("test");
     parentLastActions.current && autoAnimate(parentLastActions.current);
   }, [parentLastActions]);
 

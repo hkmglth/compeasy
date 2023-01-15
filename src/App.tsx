@@ -12,10 +12,9 @@ import CompaniesEdit from "modules/Companies/Edit/CompaniesEdit";
 import Products from "modules/Products/Products";
 import ProductsEdit from "modules/Products/Edit/ProductsEdit";
 import Profile from "modules/Profile";
+import PrivateRoute from "components/PrivateRoute";
 
 const App = () => {
-  const { token } = useAuth();
-
   return (
     <Routes>
       <Route element={<Landing />} path="/" />
@@ -25,7 +24,7 @@ const App = () => {
         <Route element={<Navigate to={"404"} />} path="*" />
         <Route element={<Page404 />} path="404" />
       </Route>
-      {token && token.length > 0 && (
+      <Route element={<PrivateRoute />}>
         <Route path="dashboard" element={<Dashboard />}>
           <Route index element={<DashboardLanding />} />
           <Route path="profile" element={<Profile />} />
@@ -40,7 +39,7 @@ const App = () => {
           </Route>
           <Route path="products/:companyId" element={<Products />} />
         </Route>
-      )}
+      </Route>
     </Routes>
   );
 };
