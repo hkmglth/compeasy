@@ -29,7 +29,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<IUserInfoDto>(AuthContextDefault.user);
 
   const token = () => {
-    return getToken().headers.Authorization.split(" ")[1];
+    return getToken().headers.Authorization;
   };
 
   const getUser = async () => {
@@ -38,7 +38,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(response.data);
     }
   };
-
   useEffect(() => {
     const checkToken = token().length !== 0;
     if (checkToken) {
