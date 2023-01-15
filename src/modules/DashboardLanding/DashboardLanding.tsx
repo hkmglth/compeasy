@@ -1,21 +1,23 @@
 import {
   getAllCountryStats,
   getAllFieldStats,
-  getCompaniesCount,
   getLastActionCompanies,
 } from "api/CompaniesApi";
 import CompanySimple from "components/Company/CompanySimple";
 import { ICompaniesDto } from "dtos/Companies";
 import { useEffect, useRef, useState } from "react";
 import autoAnimate from "@formkit/auto-animate";
-import { Divider } from "antd";
+import { Divider, Skeleton } from "antd";
 import { Pie } from "@ant-design/plots";
 import { IMultipleFieldStats } from "dtos/Fields";
 import { ClockCircleOutlined, PieChartOutlined } from "@ant-design/icons";
+import { useMessage } from "hooks";
 
 const DashboardLanding = () => {
   const parentLastActions = useRef<HTMLDivElement>(null);
-
+  const [isLastActionsLoading, setIsLastActionsLoading] =
+    useState<boolean>(false);
+  const { messageApi } = useMessage();
   const [lastActionCompanies, setLastActionCompanies] = useState<ICompaniesDto>(
     []
   );
@@ -23,8 +25,17 @@ const DashboardLanding = () => {
   const [fieldStats, setFieldStats] = useState<IMultipleFieldStats>([]);
   const [countryStats, setCountryStats] = useState<IMultipleFieldStats>([]);
   const getLastActions = async () => {
+    setIsLastActionsLoading(true);
     const response = await getLastActionCompanies();
-    setLastActionCompanies(response);
+    if (response.success) {
+      setLastActionCompanies(response.data);
+    } else {
+      messageApi.open({
+        type: "error",
+        content: response.message,
+      });
+    }
+    setIsLastActionsLoading(false);
   };
 
   const getFieldStats = async () => {
@@ -102,13 +113,24 @@ const DashboardLanding = () => {
           className="flex flex-wrap gap-4 flex-row justify-center items-center"
           ref={parentLastActions}
         >
-          {lastActionCompanies.map((company) => (
-            <CompanySimple key={company.id} company={company} />
-          ))}
+          {isLastActionsLoading ? (
+            <>
+              <Skeleton className="rounded-md shadow-lg flex flex-col items-center justify-center w-full md:w-[calc(50%-1rem)] lg:w-[calc(25%-1rem)]" />
+              <Skeleton className="rounded-md shadow-lg flex flex-col items-center justify-center w-full md:w-[calc(50%-1rem)] lg:w-[calc(25%-1rem)]" />
+              <Skeleton className="rounded-md shadow-lg flex flex-col items-center justify-center w-full md:w-[calc(50%-1rem)] lg:w-[calc(25%-1rem)]" />
+              <Skeleton className="rounded-md shadow-lg flex flex-col items-center justify-center w-full md:w-[calc(50%-1rem)] lg:w-[calc(25%-1rem)]" />
+            </>
+          ) : !isLastActionsLoading && lastActionCompanies.length > 0 ? (
+            lastActionCompanies.map((company) => (
+              <CompanySimple key={company.id} company={company} />
+            ))
+          ) : (
+            <></>
+          )}
         </div>
       </div>
-      <div className="flex flex-row justify-center items-center gap-4">
-        <div className="flex flex-col w-[calc(50%-1rem)] shadow-lg rounded-md bg-gray-100 gap-x-2">
+      <div className="flex flex-col lg:flex-row justify-center items-center gap-4">
+        <div className="flex flex-col w-full lg:w-[calc(50%-1rem)] shadow-lg rounded-md bg-gray-100 gap-x-2">
           <Divider orientation="left">
             <p className="font-bold flex flex-row gap-x-3 text-gray-500 text-lg m-0 p-0">
               <PieChartOutlined />
@@ -117,7 +139,7 @@ const DashboardLanding = () => {
           </Divider>
           <Pie {...fieldConfig} />
         </div>
-        <div className="flex flex-col w-[calc(50%-1rem)] shadow-lg rounded-md bg-gray-100 gap-x-2">
+        <div className="flex flex-col w-full lg:w-[calc(50%-1rem)] shadow-lg rounded-md bg-gray-100 gap-x-2">
           <Divider orientation="left">
             <p className="font-bold flex flex-row gap-x-3 text-gray-500 text-lg m-0 p-0">
               <PieChartOutlined />

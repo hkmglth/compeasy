@@ -1,6 +1,6 @@
 import { Form, Input, Modal, Select, Table } from "antd";
 import Button from "antd/es/button";
-import { getAllCompanies } from "api/CompaniesApi";
+import { addCompany, deleteCompanies, getAllCompanies } from "api/CompaniesApi";
 import { ICompaniesDto, ICompanyDto } from "dtos/Companies";
 import React, { useEffect, useState } from "react";
 import { AllCompaniesColumns } from "utils/Columns/CompaniesColumns";
@@ -26,14 +26,26 @@ const Companies = () => {
   const [fieldOptions, setFieldOptions] = useState<DefaultOptionType[]>([]);
   const [countryOptions, setCountryOptions] = useState<DefaultOptionType[]>([]);
   const [search, setSearch] = useState<string>("");
+  const [isCompaniesLoading, setIsCompaniesLoading] = useState<boolean>(false);
 
   const getCompanies = async () => {
     if (companies.length > 0) {
       setTempAllCompanies(structuredClone(companies));
     } else {
+      setIsCompaniesLoading(true);
       const response = await getAllCompanies();
-      setCompanies(response);
-      setTempAllCompanies(response);
+      if (response.success) {
+        messageApi.open({
+          type: "success",
+          content: response.message,
+        });
+        setCompanies(response.data);
+        setTempAllCompanies(response.data);
+      } else {
+        setCompanies(response.data);
+        setTempAllCompanies(response.data);
+      }
+      setIsCompaniesLoading(false);
     }
   };
 
@@ -44,27 +56,44 @@ const Companies = () => {
     },
   };
 
-  const deleteSelections = () => {
+  const deleteSelections = async () => {
+    setIsCompaniesLoading(true);
     if (selected.length === 0) {
       messageApi.open({
         type: "warning",
         content: "Please select a company!",
       });
+    } else {
+      let tempCompanies: ICompaniesDto = structuredClone(companies);
+      let tempSelectedIds = selected.map((select) => select.id);
+      let tempDeletedCompanies = tempCompanies.filter(
+        (company) => !tempSelectedIds.includes(company.id)
+      );
+
+      const response = await deleteCompanies(tempSelectedIds);
+      if (response.success) {
+        messageApi.open({
+          type: "success",
+          content: response.message,
+        });
+        setCompanies(tempDeletedCompanies);
+        setTempAllCompanies(tempDeletedCompanies);
+      } else {
+        messageApi.open({
+          type: "error",
+          content: response.message,
+        });
+      }
+
+      setIsCompaniesLoading(false);
     }
-    let tempCompanies: ICompaniesDto = structuredClone(companies);
-    let tempSelectedIds = selected.map((select) => select.id);
-    let tempDeletedCompanies = tempCompanies.filter(
-      (company) => !tempSelectedIds.includes(company.id)
-    );
-    setCompanies(tempDeletedCompanies);
-    setTempAllCompanies(tempDeletedCompanies);
   };
 
   const toggleAddCompanyModal = () => {
     setAddCompanyModal(!addCompanyModal);
   };
 
-  const onFinish = (values: ICompanyDto) => {
+  const onFinish = async (values: ICompanyDto) => {
     let tempCompany: ICompanyDto = {
       companyName: values.companyName,
       companyPhone: values.companyPhone,
@@ -76,13 +105,23 @@ const Companies = () => {
       id: companies.length + 1,
       key: companies.length + 1,
     };
-    setCompanies([tempCompany, ...companies]);
-    setTempAllCompanies([tempCompany, ...companies]);
-    messageApi.open({
-      type: "success",
-      content: "Company added successfully!",
-    });
-    toggleAddCompanyModal();
+    setIsCompaniesLoading(true);
+    const response = await addCompany(tempCompany);
+    if (response.success) {
+      setCompanies([tempCompany, ...companies]);
+      setTempAllCompanies([tempCompany, ...companies]);
+      messageApi.open({
+        type: "success",
+        content: "Company added successfully!",
+      });
+      toggleAddCompanyModal();
+    } else {
+      messageApi.open({
+        type: "error",
+        content: response.message,
+      });
+    }
+    setIsCompaniesLoading(false);
   };
 
   const onFinishFailed = (values: ValidateErrorEntity<ICompanyDto>) => {
@@ -150,7 +189,7 @@ const Companies = () => {
               className="flex flex-row items-center justify-between"
             >
               <PlusOutlined />
-              Add Company
+              <p className="hidden md:flex m-0 p-0 ml-2">Add Company</p>
             </Button>
 
             <Button
@@ -159,7 +198,7 @@ const Companies = () => {
               danger
             >
               <MinusOutlined />
-              Delete Companies
+              <p className="hidden md:flex m-0 p-0 ml-2">Delete Companies</p>
             </Button>
           </div>
 
@@ -176,6 +215,7 @@ const Companies = () => {
           </div>
         </div>
         <Table
+          loading={isCompaniesLoading}
           rowSelection={{
             ...rowSelection,
           }}

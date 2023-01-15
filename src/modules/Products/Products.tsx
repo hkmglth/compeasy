@@ -16,7 +16,7 @@ import { useMessage, useProducts } from "hooks";
 import { DefaultOptionType } from "antd/es/select";
 import allCompanies from "fakeData/companies.json";
 import { ICompanyDto } from "dtos/Companies";
-import { getCompanyById } from "api/CompaniesApi";
+import { getCompanyByIdLocale } from "api/CompaniesApi";
 import { ValidateErrorEntity } from "rc-field-form/lib/interface";
 const Products = () => {
   const { companyId } = useParams();
@@ -57,7 +57,7 @@ const Products = () => {
   };
 
   const getCompany = async () => {
-    const response = await getCompanyById(parseInt(companyId!));
+    const response = await getCompanyByIdLocale(parseInt(companyId!));
     setCompany(response);
   };
 

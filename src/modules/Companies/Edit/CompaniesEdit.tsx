@@ -1,4 +1,8 @@
-import { getCompanyById } from "api/CompaniesApi";
+import {
+  getCompanyById,
+  getCompanyByIdLocale,
+  updateCompany,
+} from "api/CompaniesApi";
 import { ICompaniesDto, ICompanyDto } from "dtos/Companies";
 import { useCompanies, useMessage } from "hooks";
 import React, { useEffect, useState } from "react";
@@ -16,35 +20,45 @@ const CompaniesEdit = () => {
   const [company, setCompany] = useState<ICompanyDto>({} as ICompanyDto);
   const [fieldOptions, setFieldOptions] = useState<DefaultOptionType[]>([]);
   const [countryOptions, setCountryOptions] = useState<DefaultOptionType[]>([]);
-
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const getCompany = async () => {
+    setIsLoading(true);
     const response = await getCompanyById(parseInt(companyId!));
-    if (response.companyName !== undefined) {
-      setCompany(response);
+    if (response.success) {
+      setCompany(response.data);
     } else {
       messageApi.open({
         type: "error",
-        content: "Company details not found!",
+        content: response.message,
       });
       navigate("../../companies");
     }
+    setIsLoading(false);
   };
 
-  const onFinish = (values: ICompanyDto) => {
-    let tempCompany: ICompanyDto = { ...values };
-    let updatedCompanies: ICompaniesDto = companies.map((company) => {
-      if (company.id === tempCompany.id) {
-        company = tempCompany;
-      }
-      return company;
-    });
-    setCompanies(updatedCompanies);
-    messageApi.open({
-      type: "success",
-      content: "Company updated successfully!",
-    });
-    navigate("../../companies");
+  const onFinish = async (values: ICompanyDto) => {
+    const response = await updateCompany(company);
+    if (response.success) {
+      let tempCompany: ICompanyDto = { ...values };
+      let updatedCompanies: ICompaniesDto = companies.map((company) => {
+        if (company.id === tempCompany.id) {
+          company = tempCompany;
+        }
+        return company;
+      });
+      setCompanies(updatedCompanies);
+      messageApi.open({
+        type: "success",
+        content: response.message,
+      });
+      navigate("../../companies");
+    } else {
+      messageApi.open({
+        type: "error",
+        content: response.message,
+      });
+    }
   };
 
   const onFinishFailed = (values: ValidateErrorEntity<ICompanyDto>) => {
