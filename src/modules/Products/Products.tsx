@@ -126,11 +126,18 @@ const Products = () => {
       let tempCheck: boolean = false;
       Object.values(prod).map((values) => {
         if (typeof values === "string") {
-          if (values.includes(tempValue)) {
+          if (
+            values.toLocaleLowerCase().includes(tempValue.toLocaleLowerCase())
+          ) {
             tempCheck = true;
           }
         } else {
-          if (values.toString().includes(tempValue)) {
+          if (
+            values
+              .toString()
+              .toLocaleLowerCase()
+              .includes(tempValue.toLocaleLowerCase())
+          ) {
             tempCheck = true;
           }
         }
