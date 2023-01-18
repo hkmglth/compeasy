@@ -1,6 +1,11 @@
 import { Button, Modal, Select, Table, Form, Input, InputNumber } from "antd";
 import { TableRowSelection } from "antd/es/table/interface";
-import { getAllProducts, getProductsByCompanyId } from "api/ProductsApi";
+import {
+  addProduct,
+  deleteProductById,
+  getAllProducts,
+  getProductsByCompanyId,
+} from "api/ProductsApi";
 import { IProductDto, IProductsDto } from "dtos/Products";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -14,10 +19,10 @@ import {
 import { AllProductsColumns } from "utils/Columns/ProductsColumns";
 import { useMessage, useProducts } from "hooks";
 import { DefaultOptionType } from "antd/es/select";
-import allCompanies from "fakeData/companies.json";
 import { ICompanyDto } from "dtos/Companies";
-import { getCompanyByIdLocale } from "api/CompaniesApi";
+import { getCompaniesDropdown, getCompanyByIdLocale } from "api/CompaniesApi";
 import { ValidateErrorEntity } from "rc-field-form/lib/interface";
+import { CompanyFieldsAsArray } from "dtos/Fields";
 const Products = () => {
   const { companyId } = useParams();
   const { messageApi } = useMessage();
@@ -30,30 +35,52 @@ const Products = () => {
   const [companiesOptions, setCompaniesOptions] = useState<DefaultOptionType[]>(
     []
   );
+  const [fieldOptions, setFieldOptions] = useState<DefaultOptionType[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
   const getAllProds = async () => {
-    if (products.length > 0) {
-      setTempProducts(structuredClone(products));
+    setIsLoading(true);
+    const response = await getAllProducts();
+    console.log(response);
+    if (response.success) {
+      setProducts(response.data);
+      setTempProducts(response.data);
+      messageApi.open({
+        type: "success",
+        content: response.message,
+      });
     } else {
-      const response = await getAllProducts();
-      setProducts(response);
-      setTempProducts(response);
+      messageApi.open({
+        type: "error",
+        content: response.message,
+      });
     }
+
+    setIsLoading(false);
   };
 
-  const getProdsByCompanyId = async (id: number) => {
-    const response = await getProductsByCompanyId(id);
-    if (response.length === 0) {
+  const getProdsByCompanyId = async (companyId: number) => {
+    setIsLoading(true);
+    const response = await getProductsByCompanyId(companyId);
+    if (response.success) {
+      if (response.data.length === 0) {
+        messageApi.open({
+          type: "error",
+          content: response.message,
+        });
+      }
+      setProducts(response.data);
+      setTempProducts(response.data);
+    } else {
       messageApi.open({
-        type: "warning",
-        content: "Company not found!",
+        type: "error",
+        content: response.message,
       });
       navigate("../../dashboard/products");
     }
-    setProducts(response);
-    setTempProducts(response);
+    setIsLoading(false);
   };
 
   const getCompany = async () => {
@@ -72,31 +99,63 @@ const Products = () => {
     setAddProductModal(!addProductModal);
   };
 
-  const deleteSelections = () => {
+  const allProds = () => {
+    getAllProds();
+    navigate("../../dashboard/products");
+  };
+
+  const deleteSelections = async () => {
+    setIsLoading(true);
     if (selected.length === 0) {
       messageApi.open({
         type: "warning",
         content: "Please select a product!",
       });
     }
+
     let tempProducts: IProductsDto = structuredClone(products);
     let tempSelectedIds = selected.map((select) => select.id);
-    let deletedProducts = tempProducts.filter(
-      (company) => !tempSelectedIds.includes(company.id)
-    );
-    setProducts(deletedProducts);
-    setTempProducts(deletedProducts);
+
+    const response = await deleteProductById(tempSelectedIds);
+    if (response.success) {
+      let deletedProducts = tempProducts.filter(
+        (company) => !tempSelectedIds.includes(company.id)
+      );
+      setProducts(deletedProducts);
+      setTempProducts(deletedProducts);
+      messageApi.open({
+        type: "success",
+        content: response.message,
+      });
+    } else {
+      messageApi.open({
+        type: "error",
+        content: response.message,
+      });
+    }
+    setIsLoading(false);
   };
 
-  const fillCompaniesOptions = () => {
-    let tempCompaniesOptions: DefaultOptionType[] = [];
-    allCompanies.map((company) =>
-      tempCompaniesOptions.push({
-        label: company.companyName,
-        value: company.id,
-      })
+  const fillCompaniesOptions = async () => {
+    if (!(companiesOptions.length > 0)) {
+      const response = await getCompaniesDropdown();
+      if (response.success) {
+        setCompaniesOptions(response.data);
+      }
+    }
+  };
+
+  const fillFieldOption = () => {
+    let tempField: DefaultOptionType[] = [];
+    CompanyFieldsAsArray.map((field) =>
+      tempField.push({ value: field, label: field })
     );
-    setCompaniesOptions(tempCompaniesOptions);
+    setFieldOptions(tempField);
+  };
+
+  const fillOptions = () => {
+    fillCompaniesOptions();
+    fillFieldOption();
   };
 
   const handleChange: any = (value: number, option: DefaultOptionType) => {
@@ -104,11 +163,36 @@ const Products = () => {
     getProdsByCompanyId(value);
   };
 
-  const onFinish = (values: IProductDto) => {
-    let tempProd: IProductDto = { ...values, id: products.length + 1 };
-    setProducts([tempProd, ...products]);
-    setTempProducts([tempProd, ...products]);
+  const onFinish = async (values: IProductDto) => {
+    setIsLoading(true);
+    let tempProd: IProductDto = {
+      ...values,
+      id: products.length + 1,
+      key: products.length + 1,
+      productPrice: `$${values.productPrice}`,
+    };
+
+    const response = await addProduct({
+      ...values,
+      productPrice: `$${values.productPrice}`,
+    });
+    if (response.success) {
+      messageApi.open({
+        type: "success",
+        content: response.message,
+      });
+      getAllProds();
+      const temp: IProductsDto = [tempProd, ...products];
+      setProducts(temp);
+      setTempProducts(temp);
+    } else {
+      messageApi.open({
+        type: "error",
+        content: response.message,
+      });
+    }
     toggleAddProductModal();
+    setIsLoading(false);
   };
 
   const onFinishFailed = (values: ValidateErrorEntity<IProductDto>) => {
@@ -126,18 +210,11 @@ const Products = () => {
       let tempCheck: boolean = false;
       Object.values(prod).map((values) => {
         if (typeof values === "string") {
-          if (
-            values.toLocaleLowerCase().includes(tempValue.toLocaleLowerCase())
-          ) {
+          if (values.includes(tempValue)) {
             tempCheck = true;
           }
         } else {
-          if (
-            values
-              .toString()
-              .toLocaleLowerCase()
-              .includes(tempValue.toLocaleLowerCase())
-          ) {
+          if (values.toString().includes(tempValue)) {
             tempCheck = true;
           }
         }
@@ -148,13 +225,13 @@ const Products = () => {
   };
 
   useEffect(() => {
-    if (companyId === undefined) {
+    if (companyId === undefined || companyId.length === 0) {
       getAllProds();
     } else {
       getProdsByCompanyId(parseInt(companyId));
       getCompany();
     }
-    fillCompaniesOptions();
+    fillOptions();
   }, []);
 
   return (
@@ -162,9 +239,9 @@ const Products = () => {
       <div className="flex flex-col gap-3">
         <div className="flex flex-row gap-x-3 justify-between">
           <div className="flex flex-row gap-x-3">
-            {companyId && (
+            {companyId && companyId?.length > 0 && (
               <Button
-                onClick={() => navigate("../../dashboard/products")}
+                onClick={allProds}
                 className="flex flex-row items-center justify-between"
               >
                 <ShopOutlined />
@@ -196,7 +273,6 @@ const Products = () => {
               </p>
               <Select
                 placeholder="Select a company"
-                defaultValue={{ value: company.id, label: company.companyName }}
                 className="w-40"
                 onSelect={handleChange}
                 options={companiesOptions}
@@ -216,6 +292,7 @@ const Products = () => {
           </div>
         </div>
         <Table
+          loading={isLoading}
           rowSelection={{
             ...rowSelection,
           }}
@@ -288,7 +365,7 @@ const Products = () => {
               },
             ]}
           >
-            <InputNumber className="w-full" addonBefore="$" />
+            <InputNumber className="w-full" />
           </Form.Item>
 
           <Form.Item
@@ -338,6 +415,26 @@ const Products = () => {
               defaultValue={{ value: company.id, label: company.companyName }}
               className="w-40"
               options={companiesOptions}
+            />
+          </Form.Item>
+
+          <Form.Item
+            labelCol={{ span: 24, className: "!-mb-2" }}
+            wrapperCol={{ span: 24 }}
+            label="Fields"
+            name="fields"
+            rules={[{ required: true, message: "Please enter field!", min: 3 }]}
+          >
+            <Select
+              showSearch
+              placeholder="Select a field"
+              optionFilterProp="children"
+              filterOption={(input, option: any) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              options={fieldOptions}
             />
           </Form.Item>
 

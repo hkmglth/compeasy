@@ -1,4 +1,4 @@
-import { getProductById } from "api/ProductsApi";
+import { getProductById, updateProduct } from "api/ProductsApi";
 import { IProductDto } from "dtos/Products";
 import { useMessage } from "hooks";
 import {
@@ -14,9 +14,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ValidateErrorEntity } from "rc-field-form/lib/interface";
 import { DefaultOptionType } from "antd/es/select";
-import allCompanies from "fakeData/companies.json";
 import { PlusOutlined, CloseOutlined, EditOutlined } from "@ant-design/icons";
-import { ICompanyDto } from "dtos/Companies";
+import { getCompaniesDropdown } from "api/CompaniesApi";
 const ProductsEdit = () => {
   const { productId } = useParams();
   const { messageApi } = useMessage();
@@ -25,21 +24,42 @@ const ProductsEdit = () => {
   const [companiesOptions, setCompaniesOptions] = useState<DefaultOptionType[]>(
     []
   );
-  const [company, setCompany] = useState<ICompanyDto>({} as ICompanyDto);
+
   const getProduct = async () => {
     const response = await getProductById(parseInt(productId!));
-    if (response.id === undefined) {
+    if (response.success) {
+      setProduct(response.data);
+    } else {
       messageApi.open({
         type: "error",
         content: "Product not found!",
       });
       navigate("../../");
-    } else {
-      setProduct(response);
     }
   };
 
-  const onFinish = (values: IProductDto) => {};
+  const onFinish = async (values: IProductDto) => {
+    const tempValues: IProductDto = {
+      ...product,
+      productPrice:
+        product.productPrice[0] !== "$"
+          ? `$${product.productPrice}`
+          : product.productPrice,
+    };
+    const response = await updateProduct(tempValues);
+    if (response.success) {
+      messageApi.open({
+        type: "success",
+        content: response.message,
+      });
+      navigate("../");
+    } else {
+      messageApi.open({
+        type: "error",
+        content: response.message,
+      });
+    }
+  };
 
   const onFinishFailed = (values: ValidateErrorEntity<IProductDto>) => {
     values.errorFields.map((errors) =>
@@ -49,15 +69,11 @@ const ProductsEdit = () => {
     );
   };
 
-  const fillCompaniesOptions = () => {
-    let tempCompaniesOptions: DefaultOptionType[] = [];
-    allCompanies.map((company) =>
-      tempCompaniesOptions.push({
-        label: company.companyName,
-        value: company.id,
-      })
-    );
-    setCompaniesOptions(tempCompaniesOptions);
+  const fillCompaniesOptions = async () => {
+    const response = await getCompaniesDropdown();
+    if (response.success) {
+      setCompaniesOptions(response.data);
+    }
   };
 
   useEffect(() => {
@@ -66,7 +82,6 @@ const ProductsEdit = () => {
         type: "error",
         content: "Product not found!",
       });
-      navigate("../../");
     } else {
       getProduct();
     }
@@ -99,15 +114,14 @@ const ProductsEdit = () => {
             wrapperCol={{ span: 24 }}
             label="Product Name"
             name="productName"
-            rules={[
-              {
-                required: true,
-                message: "Please enter product name !",
-                min: 3,
-              },
-            ]}
+            valuePropName="productName"
           >
-            <Input />
+            <Input
+              value={product.productName}
+              onChange={(e) =>
+                setProduct({ ...product, productName: e.target.value })
+              }
+            />
           </Form.Item>
 
           <Form.Item
@@ -115,14 +129,15 @@ const ProductsEdit = () => {
             wrapperCol={{ span: 24 }}
             label="Product Amount"
             name="productAmount"
-            rules={[
-              {
-                required: true,
-                message: "Please enter product amount!",
-              },
-            ]}
+            valuePropName="productAmount"
           >
-            <InputNumber className="w-full" />
+            <InputNumber
+              value={product.productAmount}
+              onChange={(e) =>
+                setProduct({ ...product, productAmount: e === null ? 0 : e })
+              }
+              className="w-full"
+            />
           </Form.Item>
 
           <Form.Item
@@ -130,14 +145,15 @@ const ProductsEdit = () => {
             wrapperCol={{ span: 24 }}
             label="Product Price"
             name="productPrice"
-            rules={[
-              {
-                required: true,
-                message: "Please enter product price!",
-              },
-            ]}
+            valuePropName="productPrice"
           >
-            <InputNumber className="w-full" addonBefore="$" />
+            <Input
+              value={product.productPrice}
+              onChange={(e) =>
+                setProduct({ ...product, productPrice: e.target.value })
+              }
+              className="w-full"
+            />
           </Form.Item>
 
           <Form.Item
@@ -145,11 +161,15 @@ const ProductsEdit = () => {
             wrapperCol={{ span: 24 }}
             label="Website"
             name="website"
-            rules={[
-              { required: true, message: "Please enter website!", min: 3 },
-            ]}
+            valuePropName="website"
           >
-            <Input addonBefore="https://" />
+            <Input
+              value={product.website}
+              onChange={(e) =>
+                setProduct({ ...product, website: e.target.value })
+              }
+              addonBefore="https://"
+            />
           </Form.Item>
 
           <Form.Item
@@ -157,9 +177,11 @@ const ProductsEdit = () => {
             wrapperCol={{ span: 24 }}
             label="Status"
             name="status"
-            rules={[{ required: true, message: "Please enter company!" }]}
+            valuePropName="status"
           >
             <Select
+              value={product.status}
+              onSelect={(e) => setProduct({ ...product, status: e })}
               placeholder="Select a status"
               className="w-40"
               options={[
@@ -180,11 +202,12 @@ const ProductsEdit = () => {
             wrapperCol={{ span: 24 }}
             label="Company"
             name="companyId"
-            rules={[{ required: true, message: "Please enter company!" }]}
+            valuePropName="companyId"
           >
             <Select
+              onSelect={(e) => setProduct({ ...product, companyId: e })}
               placeholder="Select a company"
-              defaultValue={{ value: company.id, label: company.companyName }}
+              value={product.companyId}
               className="w-40"
               options={companiesOptions}
             />
@@ -196,6 +219,7 @@ const ProductsEdit = () => {
           >
             <div className="flex flex-row gap-x-3 justify-end">
               <Button
+                onClick={() => navigate(-1)}
                 danger
                 type="default"
                 className="flex flex-row items-center justify-between"
@@ -209,7 +233,7 @@ const ProductsEdit = () => {
                 className="flex flex-row items-center justify-between"
               >
                 <PlusOutlined />
-                Add Product
+                Update Product
               </Button>
             </div>
           </Form.Item>

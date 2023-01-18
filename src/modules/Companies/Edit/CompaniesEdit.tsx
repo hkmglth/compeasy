@@ -1,8 +1,4 @@
-import {
-  getCompanyById,
-  getCompanyByIdLocale,
-  updateCompany,
-} from "api/CompaniesApi";
+import { getCompanyById, updateCompany } from "api/CompaniesApi";
 import { ICompaniesDto, ICompanyDto } from "dtos/Companies";
 import { useCompanies, useMessage } from "hooks";
 import React, { useEffect, useState } from "react";
@@ -248,6 +244,7 @@ const CompaniesEdit = () => {
                 Cancel
               </Button>
               <Button
+                loading={isLoading}
                 type="default"
                 htmlType="submit"
                 className="flex flex-row items-center justify-between"

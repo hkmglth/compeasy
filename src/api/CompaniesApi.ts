@@ -1,3 +1,4 @@
+import { DefaultOptionType } from "antd/es/select";
 import { ICompanyUpdateDto } from "./../dtos/Companies";
 import getToken from "utils/getToken";
 import {
@@ -179,6 +180,25 @@ const getCompaniesCount = async (): Promise<number> => {
   return company;
 };
 
+const getCompaniesDropdown = async (): Promise<
+  IMultiResponseDto<DefaultOptionType>
+> => {
+  try {
+    const response = await CompaniesApi.get(
+      "/getCompaniesDropdown",
+      getToken()
+    );
+    return response.data;
+  } catch (error: any) {
+    const newResponse: IMultiResponseDto<DefaultOptionType> = {
+      data: [] as DefaultOptionType[],
+      message: error.response.data.message!,
+      success: error.response.data.success!,
+    };
+    return newResponse;
+  }
+};
+
 export {
   getAllCompanies,
   getLastActionCompanies,
@@ -190,4 +210,5 @@ export {
   deleteCompanies,
   updateCompany,
   getCompanyByIdLocale,
+  getCompaniesDropdown,
 };
