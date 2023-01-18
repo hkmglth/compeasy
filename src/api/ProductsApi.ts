@@ -105,7 +105,6 @@ const addProduct = async (product: IProductDto): Promise<IResponseDto> => {
 };
 
 const updateProduct = async (product: IProductDto): Promise<IResponseDto> => {
-  console.log(product);
   try {
     const response = await ProductsApi.post(
       "/updateProduct",
@@ -114,7 +113,6 @@ const updateProduct = async (product: IProductDto): Promise<IResponseDto> => {
     );
     return response.data;
   } catch (error: any) {
-    console.log(error);
     const newResponse: IResponseDto = {
       message: error.response.data.message!,
       success: error.response.data.success!,

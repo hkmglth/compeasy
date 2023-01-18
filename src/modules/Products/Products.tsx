@@ -43,7 +43,6 @@ const Products = () => {
   const getAllProds = async () => {
     setIsLoading(true);
     const response = await getAllProducts();
-    console.log(response);
     if (response.success) {
       setProducts(response.data);
       setTempProducts(response.data);
