@@ -14,16 +14,9 @@ import {
   AppstoreOutlined,
 } from "@ant-design/icons";
 import "./dashboard.css";
-import { useAuth } from "hooks";
+import { useAuth, useCompanies, useStats } from "hooks";
 import STORAGEKEYS from "utils/StorageKeys";
 import { ItemType } from "antd/es/menu/hooks/useItems";
-import { getProductsCount } from "api/ProductsApi";
-import { getCompaniesCount } from "api/CompaniesApi";
-
-type ICounts = {
-  companiesCount: number;
-  productsCount: number;
-};
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -33,8 +26,7 @@ const Dashboard = () => {
   } = theme.useToken();
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string[]>();
-
-  const [counts, setCounts] = useState<ICounts>({} as ICounts);
+  const { stats, setStats } = useStats();
   const location = useLocation();
   const navigate = useNavigate();
   const showModal = () => {
@@ -111,16 +103,6 @@ const Dashboard = () => {
     setSelected(selectedKey.length === 0 ? ["1"] : selectedKey);
   };
 
-  const getCounts = async () => {
-    const prodResponse = await getProductsCount();
-    const compResponse = await getCompaniesCount();
-    setCounts({ productsCount: prodResponse, companiesCount: compResponse });
-  };
-
-  useEffect(() => {
-    getCounts();
-  }, []);
-
   useEffect(() => {
     handleSelected();
   }, [location]);
@@ -176,8 +158,8 @@ const Dashboard = () => {
               <div className="hidden lg:flex flex-row gap-x-6 justify-center items-center">
                 <p className="m-0 p-0">
                   Welcome to <b>etecube</b> with
-                  <b> {counts.companiesCount} </b>
-                  companies and <b> {counts.productsCount} </b> products!
+                  <b> {stats.companiesCount} </b>
+                  companies and <b> {stats.productsCount} </b> products!
                 </p>
               </div>
             </div>

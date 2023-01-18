@@ -1,5 +1,5 @@
 import { IResponseDto, ISingleResponseDto } from "./../dtos/Response";
-import { IProductDto, IProductsDto } from "./../dtos/Products";
+import { IProductDto } from "./../dtos/Products";
 import allProducts from "fakeData/products.json";
 import BASEURLS from "utils/BaseUrls";
 import axios from "axios";

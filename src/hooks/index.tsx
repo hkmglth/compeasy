@@ -3,9 +3,10 @@ import { AuthContext } from "contexts/AuthContext";
 import { MessageContext } from "contexts/MessageContext";
 import { CompaniesContext } from "contexts/CompaniesContext";
 import { ProductsContext } from "contexts/ProductsContext";
-
+import { StatsContext } from "contexts/StatsContext";
 const useAuth = () => useContext(AuthContext);
 const useMessage = () => useContext(MessageContext);
 const useCompanies = () => useContext(CompaniesContext);
 const useProducts = () => useContext(ProductsContext);
-export { useAuth, useMessage, useCompanies, useProducts };
+const useStats = () => useContext(StatsContext);
+export { useAuth, useMessage, useCompanies, useProducts, useStats };

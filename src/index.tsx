@@ -9,6 +9,7 @@ import MessageProvider from "contexts/MessageContext";
 import AuthProvider from "contexts/AuthContext";
 import CompaniesProvider from "contexts/CompaniesContext";
 import ProductsProvider from "contexts/ProductsContext";
+import StatsProvider from "contexts/StatsContext";
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
@@ -28,7 +29,9 @@ root.render(
           <MessageProvider>
             <CompaniesProvider>
               <ProductsProvider>
-                <App />
+                <StatsProvider>
+                  <App />
+                </StatsProvider>
               </ProductsProvider>
             </CompaniesProvider>
           </MessageProvider>
