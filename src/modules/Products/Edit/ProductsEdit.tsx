@@ -34,7 +34,6 @@ const ProductsEdit = () => {
         type: "error",
         content: "Product not found!",
       });
-      navigate("../../");
     }
   };
 
