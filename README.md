@@ -3,13 +3,13 @@
 <b>Tech Stack: </b>
 
 <p align="left">
-- Typescript <img src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/typescript/typescript.png" alt="typescript logo" width="25"/> <br/>
-- Axios <img src="https://raw.githubusercontent.com/axios/axios/main/media/logo.png" alt="axios logo" width="25"/> <br/>
-- React <img src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/react/react.png" alt="react logo" width="25"/> <br/>
-- React-Router <img src="https://raw.githubusercontent.com/ReactTraining/react-router/main/logo.png" alt="react-router logo" width="25"/> <br/>
-- Antd <img src="https://raw.githubusercontent.com/ant-design/ant-design/main/logo.svg" alt="antd logo" width="25"/> <br/>
-- Node.js <img src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/nodejs/nodejs.png" alt="node.js logo" width="25"/> <br/>
-- Express.js <img src="https://raw.githubusercontent.com/expressjs/express/main/logo.png" alt="express.js logo" width="25"/> <br/>
-- Mongoose <img src="https://raw.githubusercontent.com/Automattic/mongoose/main/logo.png" alt="mongoose logo" width="25"/> <br/>
-- MongoDB <img src="https://raw.githubusercontent.com/mongodb/mongo/main/assets/mongodb-logo-rgb.jpg" alt="mongodb logo" width="25"/> <br/>
+- Typescript  <br/>
+- Axios  <br/>
+- React <br/>
+- React-Router <br/>
+- Antd <br/>
+- Node.js  <br/>
+- Express.js <br/>
+- Mongoose <br/>
+- MongoDB <br/>
 </p>
